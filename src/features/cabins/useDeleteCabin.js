@@ -11,7 +11,14 @@ export function useDeleteCabin() {
       toast.success("Cabin successfully deleted");
       queryClient.invalidateQueries({ queryKey: ["cabins"] });
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => {
+      // Custom message for RLS policy violation
+      if (err.message.includes("policy")) {
+        toast.error("Action not allowed in Demo Mode");
+      } else {
+        toast.error(err.message);
+      }
+    },
   });
 
   return { isDeleting, deleteCabin };

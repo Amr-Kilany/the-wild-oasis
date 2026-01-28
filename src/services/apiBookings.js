@@ -107,6 +107,16 @@ export async function getStaysTodayActivity() {
 }
 
 export async function updateBooking(id, obj) {
+  // 1. CHECK FOR DEMO USER
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user?.email === "user@demo.com") {
+    throw new Error("Action not allowed in Demo Mode");
+  }
+
+  // 2. Perform Update
   const { data, error } = await supabase
     .from("bookings")
     .update(obj)
@@ -116,23 +126,41 @@ export async function updateBooking(id, obj) {
 
   if (error) {
     console.error(error);
-    throw new Error("Booking could not be updated");
+    throw new Error(error.message);
   }
   return data;
 }
 
 export async function deleteBooking(id) {
+  // 1. CHECK FOR DEMO USER
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user?.email === "user@demo.com") {
+    throw new Error("Action not allowed in Demo Mode");
+  }
+
   // REMEMBER RLS POLICIES
   const { data, error } = await supabase.from("bookings").delete().eq("id", id);
 
   if (error) {
-    throw new Error("Booking could not be deleted");
+    throw new Error(error.message);
   }
   return data;
 }
 
 //createBooking API
 export async function createBooking(newBooking) {
+  // 1. CHECK FOR DEMO USER
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user?.email === "user@demo.com") {
+    throw new Error("Action not allowed in Demo Mode");
+  }
+
   const { data, error } = await supabase
     .from("bookings")
     .insert([{ ...newBooking }])

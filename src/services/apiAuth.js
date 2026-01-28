@@ -45,6 +45,15 @@ export async function logout() {
 }
 
 export async function updateCurrentUser({ password, fullName, avatar }) {
+  // 1. CHECK FOR DEMO USER
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user?.email === "user@demo.com") {
+    throw new Error("Action not allowed in Demo Mode");
+  }
+
   //1. Update password OR fullName
   let updateData;
   if (password) updateData = { password };

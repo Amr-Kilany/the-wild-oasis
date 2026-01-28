@@ -12,6 +12,15 @@ export async function getCabins() {
 }
 
 export async function createEditCabin(newCabin, id) {
+  // 1. CHECK FOR DEMO USER
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user?.email === "user@demo.com") {
+    throw new Error("Action not allowed in Demo Mode");
+  }
+
   // https://caurnyeduepaddkaykzd.supabase.co/storage/v1/object/public/cabin-images//cabin-001.jpg
 
   const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
@@ -44,7 +53,8 @@ export async function createEditCabin(newCabin, id) {
 
   if (error) {
     console.log(error);
-    throw new Error("Cabins could not be created");
+    // Throwing error.message to catch RLS policies in the UI
+    throw new Error(error.message);
   }
 
   // 2.Upload the image to Supabase Storage
@@ -68,10 +78,20 @@ export async function createEditCabin(newCabin, id) {
 }
 
 export async function deleteCabin(id) {
+  // 1. CHECK FOR DEMO USER
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user?.email === "user@demo.com") {
+    throw new Error("Action not allowed in Demo Mode");
+  }
+
   const { error } = await supabase.from("cabins").delete().eq("id", id);
 
   if (error) {
     console.log(error);
-    throw new Error("Cabins could not be deleted");
+    // Throwing error.message to catch RLS policies in the UI
+    throw new Error(error.message);
   }
 }

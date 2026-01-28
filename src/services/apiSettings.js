@@ -12,6 +12,15 @@ export async function getSettings() {
 
 // We expect a newSetting object that looks like {setting: newValue}
 export async function updateSetting(newSetting) {
+  // 1. CHECK FOR DEMO USER
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user?.email === "user@demo.com") {
+    throw new Error("Action not allowed in Demo Mode");
+  }
+
   const { data, error } = await supabase
     .from("settings")
     .update(newSetting)
@@ -21,7 +30,8 @@ export async function updateSetting(newSetting) {
 
   if (error) {
     console.error(error);
-    throw new Error("Settings could not be updated");
+    // Throwing error.message to catch RLS policies in the UI
+    throw new Error(error.message);
   }
   return data;
 }

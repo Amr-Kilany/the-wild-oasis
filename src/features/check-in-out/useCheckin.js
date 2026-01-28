@@ -21,8 +21,9 @@ export function useCheckin() {
       navigate("/");
     },
 
-    onError: () => {
-      toast.error("There was an error while checking in ");
+    // CHANGE HERE: Use err.message instead of hardcoded text
+    onError: (err) => {
+      toast.error(err.message);
     },
   });
 

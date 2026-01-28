@@ -16,8 +16,9 @@ export function useCheckout() {
       queryClient.invalidateQueries({ active: true });
     },
 
-    onError: () => {
-      toast.error("There was an error while checking out ");
+    // CHANGE HERE: Use err.message instead of hardcoded text
+    onError: (err) => {
+      toast.error(err.message);
     },
   });
 

@@ -223,7 +223,14 @@ img {
 
   /* For dark mode */
   filter: grayscale(var(--image-grayscale)) opacity(var(--image-opacity));
-}`;
+}
+
+/*REMOVE THE EYE ICON */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+`;
 
 export default GlobalStyles;
 
