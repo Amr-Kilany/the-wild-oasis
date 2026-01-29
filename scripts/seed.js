@@ -1,8 +1,14 @@
 /* eslint-disable prettier/prettier */
 
-
 import { createClient } from "@supabase/supabase-js";
-import { add, parseISO, differenceInDays } from "date-fns";
+import {
+  add,
+  parseISO,
+  differenceInDays,
+  isPast,
+  isToday,
+  isFuture,
+} from "date-fns";
 
 // --- CONFIG ---
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
@@ -603,7 +609,10 @@ const subtractDatesFunc = (dateStr1, dateStr2) =>
 
 async function deleteAll() {
   console.log("Deleting old data...");
-  const { error: error1 } = await supabase.from("bookings").delete().gt("id", 0);
+  const { error: error1 } = await supabase
+    .from("bookings")
+    .delete()
+    .gt("id", 0);
   if (error1) console.error("Bookings delete error:", error1.message);
 
   const { error: error2 } = await supabase.from("guests").delete().gt("id", 0);
@@ -626,8 +635,14 @@ async function uploadAll() {
 
   // 3. Create Bookings (with recalculated IDs)
   // We need to fetch the IDs we just created
-  const { data: dbGuests } = await supabase.from("guests").select("id").order("id");
-  const { data: dbCabins } = await supabase.from("cabins").select("id").order("id");
+  const { data: dbGuests } = await supabase
+    .from("guests")
+    .select("id")
+    .order("id");
+  const { data: dbCabins } = await supabase
+    .from("cabins")
+    .select("id")
+    .order("id");
 
   if (!dbGuests || !dbCabins) {
     console.error("Could not retrieve new IDs");
@@ -642,14 +657,30 @@ async function uploadAll() {
     const guestId = allGuestIds.at(booking.guestId - 1);
     const cabinId = allCabinIds.at(booking.cabinId - 1);
 
-    // Recalculate status based on "Today"
+    // Calculate nights and price
     const numNights = subtractDatesFunc(booking.endDate, booking.startDate);
     const cabinPrice =
       numNights *
       (cabins[booking.cabinId - 1].regularPrice -
         cabins[booking.cabinId - 1].discount);
-    const extrasPrice = booking.hasBreakfast ? numNights * 15 * booking.numGuests : 0;
+    const extrasPrice = booking.hasBreakfast
+      ? numNights * 15 * booking.numGuests
+      : 0;
     const totalPrice = cabinPrice + extrasPrice;
+
+    // === FIX: CALCULATE STATUS ===
+    let status;
+    const startDate = new Date(booking.startDate);
+    const endDate = new Date(booking.endDate);
+
+    if (isPast(endDate) && !isToday(endDate)) status = "checked-out";
+    if (isFuture(startDate) || isToday(startDate)) status = "unconfirmed";
+    if (
+      (isFuture(endDate) || isToday(endDate)) &&
+      isPast(startDate) &&
+      !isToday(startDate)
+    )
+      status = "checked-in";
 
     return {
       ...booking,
@@ -659,12 +690,16 @@ async function uploadAll() {
       cabinPrice,
       extrasPrice,
       totalPrice,
+      status, // <--- This was missing!
     };
   });
 
-  const { error: errorBookings } = await supabase.from("bookings").insert(finalBookings);
+  const { error: errorBookings } = await supabase
+    .from("bookings")
+    .insert(finalBookings);
 
-  if (errorBookings) console.error("Bookings upload error:", errorBookings.message);
+  if (errorBookings)
+    console.error("Bookings upload error:", errorBookings.message);
   else console.log("Data successfully reset for today!");
 }
 
