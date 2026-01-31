@@ -8,6 +8,14 @@ const Row = styled.div`
     css`
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap; /* Allow wrapping */
+      gap: 1.6rem; /* Consistent gap */
+
+      /* Responsive: Stack vertically on mobile/tablet */
+      @media (max-width: 1000px) {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     `}
 
   ${(props) =>

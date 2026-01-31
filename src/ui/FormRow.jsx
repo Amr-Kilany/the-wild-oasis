@@ -25,6 +25,20 @@ const StyledFormRow = styled.div`
     justify-content: flex-end;
     gap: 1.2rem;
   }
+
+  /* Responsive: Stack vertically on small screens */
+  @media (max-width: 900px) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+    padding: 1.6rem 0;
+
+    /* Ensure buttons are still right-aligned or full width */
+    &:has(button) {
+      flex-direction: row;
+    }
+  }
 `;
 
 const Label = styled.label`
@@ -37,7 +51,6 @@ const Error = styled.span`
 `;
 
 function FormRow({ label, error, children }) {
-  // إذا كان children عنصرًا واحدًا فقط
   const inputId = !Array.isArray(children) ? children?.props?.id : undefined;
   return (
     <StyledFormRow>

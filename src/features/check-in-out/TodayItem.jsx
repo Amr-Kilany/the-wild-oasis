@@ -19,6 +19,29 @@ const StyledTodayItem = styled.li`
   &:first-child {
     border-top: 1px solid var(--color-grey-100);
   }
+
+  /* Responsive: Switch to Flex Column */
+  @media (max-width: 900px) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1.2rem 0;
+    text-align: center;
+
+    /* Reset Grid props */
+    grid-template-columns: none;
+
+    & img {
+      margin: 0 auto;
+    }
+
+    & button,
+    & a {
+      width: 100%;
+      text-align: center;
+      justify-content: center;
+    }
+  }
 `;
 
 const Guest = styled.div`
@@ -33,14 +56,14 @@ function TodayItem({ activity }) {
       {status === "unconfirmed" && <Tag type="green">Arriving</Tag>}
       {status === "checked-in" && <Tag type="blue">Departing</Tag>}
 
-      <Flag src={guests.countryFlag} alt={`Flag of${guests.country}`} />
+      <Flag src={guests.countryFlag} alt={`Flag of ${guests.country}`} />
       <Guest>{guests.fullName}</Guest>
       <div>{numNights} nights</div>
 
       {status === "unconfirmed" && (
         <Button
-          size="small"
-          variation="primary"
+          $size="small"
+          $variation="primary"
           as={Link}
           to={`/checkin/${id}`}
         >

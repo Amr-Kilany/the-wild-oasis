@@ -17,15 +17,21 @@ const StyledToday = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2.4rem;
-  grid-column: 1 / span 2;
   padding-top: 2.4rem;
+
+  /* Desktop: Span 2 columns */
+  grid-column: 1 / span 2;
+
+  /* Tablet: Span full width (2 columns) */
+  @media (max-width: 1200px) {
+    grid-column: 1 / -1;
+  }
 `;
 
 const TodayList = styled.ul`
   overflow: scroll;
   overflow-x: hidden;
 
-  /* Removing scrollbars for webkit, firefox, and ms, respectively */
   &::-webkit-scrollbar {
     width: 0 !important;
   }

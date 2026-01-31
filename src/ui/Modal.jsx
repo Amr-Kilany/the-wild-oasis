@@ -14,6 +14,16 @@ const StyledModal = styled.div`
   box-shadow: var(--shadow-lg);
   padding: 3.2rem 4rem;
   transition: all 0.5s;
+
+  /* Responsive Fixes */
+  width: 90%; /* Take up 90% of screen width on mobile */
+  max-width: 80rem; /* But stop at 80rem on desktop */
+  max-height: 90vh; /* Never be taller than 90% of viewport */
+  overflow-y: auto; /* Scroll inside if content is too long */
+
+  @media (max-width: 600px) {
+    padding: 2.4rem;
+  }
 `;
 
 const Overlay = styled.div`
@@ -46,9 +56,6 @@ const Button = styled.button`
   & svg {
     width: 2.4rem;
     height: 2.4rem;
-    /* Sometimes we need both */
-    /* fill: var(--color-grey-500);
-    stroke: var(--color-grey-500); */
     color: var(--color-grey-500);
   }
 `;
